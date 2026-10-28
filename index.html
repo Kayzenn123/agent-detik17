@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DETIK17 — Stopwatch Lomba 17-an RT</title>
+<meta name="description" content="Stopwatch presisi + pencatat hasil + klasemen RT otomatis untuk lomba 17 Agustus. Juri lapangan, satu layar, tanpa ribut.">
+<meta name="theme-color" content="#2a0a24">
+<link rel="canonical" href="https://kayzenn123.github.io/agent-detik17/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="DETIK17 — Stopwatch Lomba 17-an RT">
+<meta property="og:description" content="Waktu jalan, jangan bengong. Stopwatch + papan skor lomba 17-an dalam satu lapangan.">
+<meta property="og:image" content="og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/charmonman-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/noto-sans-lisu-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#arena">Lompat ke lapangan</a>
+
+<header class="topbar">
+  <a class="logo" href="#arena" aria-label="DETIK17 — ke lapangan">
+    <svg class="logo-ic" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="27" r="15" fill="none" stroke="currentColor" stroke-width="4"/><path d="M24 19v8l6 4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M19 6h10M24 6v6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+    <span class="logo-txt">DETIK<span class="logo-17">17</span></span>
+    <span class="logo-sub">stopwatch lomba rt</span>
+  </a>
+  <nav class="topnav" aria-label="Navigasi utama">
+    <a href="#arena">Arena</a>
+    <a href="#papan">Papan skor</a>
+    <a href="#lomba">Lomba</a>
+    <a href="#umumkan">Umumkan</a>
+  </nav>
+  <div class="topctl">
+    <button id="btn-gerak" type="button" aria-pressed="true">Gerak: nyala</button>
+    <button id="btn-marquee" type="button" aria-pressed="true">Marquee: jalan</button>
+  </div>
+</header>
+
+<div class="marquee band-a" aria-hidden="false">
+  <div class="mq-track" data-speed="1"><span class="mq-chunk" data-mq>DIRGAHAYU RI KE-81 ✦ BALAP KARUNG ✦ MAKAN KERUPUK ✦ TARIK TAMBANG ✦ PANJAT PINANG ✦ WAKTU JALAN, JANGAN BENGONG ✦&nbsp;</span></div>
+</div>
+
+<main id="main">
+  <!-- ============ HERO / SPLIT SCREEN ============ -->
+  <section class="hero" aria-labelledby="h1">
+    <p class="kicker">lapangan rt 01–08 • 17 agustus 2026 • hut ri ke-81</p>
+    <h1 id="h1" class="riso-title" aria-label="DETIK17 — stopwatch lomba 17-an">
+      <span class="w" data-word>DETIK</span><span class="w w17" data-word>17</span>
+    </h1>
+    <p class="hero-sub">Stopwatch presisi, pencatat hasil, dan klasemen RT — <strong>satu layar, tanpa ribut.</strong> Klik timernya, langsung jalan.</p>
+    <div class="hero-cta">
+      <a class="btn btn-accent" href="#arena">Mulai jadi juri</a>
+      <a class="btn btn-ghost" href="#papan">Lihat klasemen</a>
+    </div>
+    <p class="hero-note">Pak Juri bilang: <em>“Jangan curang, semua dicatat.”</em></p>
+  </section>
+
+  <div class="marquee band-b" aria-hidden="true">
+    <div class="mq-track mq-rev" data-speed="1.6"><span class="mq-chunk">★ JUARA 1 = 3 POIN ★ JUARA 2 = 2 POIN ★ JUARA 3 = 1 POIN ★ ATURAN PANITIA, BISA DIUBAH ★&nbsp;</span></div>
+  </div>
+
+  <!-- ============ ARENA + PAPAN SKOR (split screen) ============ -->
+  <div class="split" id="split" style="--split:52%">
+    <section class="world arena" id="arena" aria-labelledby="h-arena">
+      <header class="world-head">
+        <h2 id="h-arena"><span class="wh-tag">Dunia 1</span> Arena lomba</h2>
+        <p class="world-sub">Stopwatch-nya juri. Klik angka atau tekan <kbd>Spasi</kbd>.</p>
+      </header>
+
+      <div class="timer" id="timer" role="timer" aria-live="off" aria-label="Stopwatch" tabindex="0" title="Klik atau tekan Spasi untuk mulai / jeda">
+        <span class="timer-digits" id="timer-digits">00:00<span class="timer-cs">,00</span></span>
+        <span class="timer-state" id="timer-state">siap — klik untuk mulai</span>
+      </div>
+      <div class="timer-btns" role="group" aria-label="Kontrol stopwatch">
+        <button id="btn-start" type="button" class="btn btn-accent btn-big">Mulai</button>
+        <button id="btn-lap" type="button" class="btn btn-ghost" disabled>Putaran</button>
+        <button id="btn-reset" type="button" class="btn btn-ghost" disabled>Ulang</button>
+      </div>
+      <ol class="laps" id="laps" aria-label="Waktu putaran"></ol>
+
+      <div class="lomba-pick">
+        <h3>Lomba yang sedang jalan</h3>
+        <p class="lomba-now" id="lomba-now">Belum pilih lomba — pilih satu di bawah.</p>
+        <div class="chips" id="chips" role="group" aria-label="Pilih lomba"></div>
+        <div class="lomba-detail" id="lomba-detail" hidden>
+          <p class="ld-nama" id="ld-nama"></p>
+          <p class="ld-meta" id="ld-meta"></p>
+          <p class="ld-aturan" id="ld-aturan"></p>
+          <p class="ld-ukur" id="ld-ukur"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" id="divider" role="slider" tabindex="0"
+      aria-label="Geser garis lapangan antara Arena dan Papan Skor"
+      aria-valuemin="30" aria-valuemax="70" aria-valuenow="52" aria-orientation="vertical">
+      <span class="div-grip" aria-hidden="true">‹‹ ››</span>
+      <span class="div-label" aria-hidden="true">geser garisnya</span>
+    </div>
+
+    <section class="world papan" id="papan" aria-labelledby="h-papan">
+      <header class="world-head">
+        <h2 id="h-papan"><span class="wh-tag">Dunia 2</span> Papan skor</h2>
+        <p class="world-sub">Klasemen antar-RT. Poin dihitung otomatis dari podium tiap lomba.</p>
+      </header>
+      <div class="stamp" aria-hidden="true"><span>SAH</span></div>
+      <ol class="klasemen" id="klasemen" aria-label="Klasemen RT"></ol>
+      <p class="klasemen-empty" id="klasemen-empty">Belum ada hasil masuk. Klasemen masih kosong — kayak lapangan sebelum peluit pertama.</p>
+      <h3 class="podium-title">Podium lomba terpilih</h3>
+      <ol class="podium" id="podium"></ol>
+      <p class="podium-empty" id="podium-empty">Pilih lomba di Arena, podiumnya muncul di sini.</p>
+      <p class="poin-note">Poin: juara 1 = <b id="poin-1">3</b>, juara 2 = <b id="poin-2">2</b>, juara 3 = <b id="poin-3">1</b>. <a href="#pengaturan">Ubah di Pengaturan</a> kalau panitia sudah sepakat lain.</p>
+    </section>
+  </div>
+
+  <div class="marquee band-c" aria-hidden="true">
+    <div class="mq-track" data-speed="2.6"><span class="mq-chunk">✦ RT 01 ✦ RT 02 ✦ RT 03 ✦ RT 04 ✦ RT 05 ✦ RT 06 ✦ RT 07 ✦ RT 08 ✦ SIAPA JUARA UMUM TAHUN INI? ✦&nbsp;</span></div>
+  </div>
+
+  <!-- ============ CATAT HASIL ============ -->
+  <section class="catat" id="catat" aria-labelledby="h-catat">
+    <h2 id="h-catat" class="sec-title">Catat hasil <span class="sec-stamp">langsung sah</span></h2>
+    <p class="sec-sub">Isi formulir ini setiap ada yang finish. Hasil langsung masuk podium + klasemen. Data tersimpan di browser ini (localStorage) — aman walau halaman di-refresh.</p>
+    <form id="form-hasil" novalidate>
+      <p class="form-karcis" aria-hidden="true">KARTU HASIL • NO. <span id="karcis-no">DETIK17-001</span> • isi pakai pulpen juri</p>
+      <div class="field">
+        <label for="f-lomba">Lomba</label>
+        <select id="f-lomba" required></select>
+      </div>
+      <div class="field">
+        <label for="f-rt">RT peserta / regu</label>
+        <select id="f-rt" required>
+          <option value="">— pilih RT —</option>
+          <option>RT 01</option><option>RT 02</option><option>RT 03</option><option>RT 04</option>
+          <option>RT 05</option><option>RT 06</option><option>RT 07</option><option>RT 08</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-nama">Nama peserta / regu</label>
+        <input id="f-nama" type="text" maxlength="40" placeholder="cth: Mbak Sinta / Tim Karung RT 03" autocomplete="off" required>
+      </div>
+      <div class="field" id="field-waktu">
+        <label for="f-waktu">Waktu (dari stopwatch)</label>
+        <div class="waktu-row">
+          <input id="f-waktu" type="text" inputmode="numeric" placeholder="mm:ss,cc — cth: 00:42,15" autocomplete="off">
+          <button id="btn-ambil-waktu" type="button" class="btn btn-ghost">Ambil dari stopwatch</button>
+        </div>
+        <p class="hint">Format: menit:detik,koma — contoh 01:23,45. Untuk lomba skor, kosongkan waktu.</p>
+      </div>
+      <div class="field" id="field-skor" hidden>
+        <label for="f-skor">Skor / poin</label>
+        <input id="f-skor" type="number" min="0" max="999" step="1" placeholder="cth: 12" autocomplete="off">
+        <p class="hint">Lomba ini dinilai dari skor, bukan waktu.</p>
+      </div>
+      <p class="form-error" id="form-error" role="alert" hidden></p>
+      <button type="submit" class="btn btn-accent btn-big">Catat hasil — sah!</button>
+    </form>
+
+    <h3 class="hasil-title">Hasil yang sudah masuk <span id="hasil-count"></span></h3>
+    <p class="hasil-empty" id="hasil-empty">Belum ada hasil. Lapangan masih sepi — catat yang pertama, Bos.</p>
+    <ul class="hasil-list" id="hasil-list"></ul>
+    <p class="hasil-hint">Geser kartu hasil ke kanan dengan cepat (flick) untuk menghapusnya. Atau tekan tombol hapus di kartu.</p>
+  </section>
+
+  <!-- ============ DAFTAR LOMBA ============ -->
+  <section class="lomba-grid" id="lomba" aria-labelledby="h-lomba">
+    <h2 id="h-lomba" class="sec-title">17 lomba, satu lapangan</h2>
+    <p class="sec-sub">Klik kartu lomba untuk menjadikannya “lomba yang sedang jalan” di Arena. Aturan di bawah ini ringkasan umum — keputusan akhir tetap di tangan panitia.</p>
+    <div class="grid" id="grid-lomba"></div>
+  </section>
+
+  <!-- ============ UMUMKAN / EKSPOR ============ -->
+  <section class="umumkan" id="umumkan" aria-labelledby="h-umumkan">
+    <h2 id="h-umumkan" class="sec-title">Umumkan ke warga</h2>
+    <p class="sec-sub">Selesai? Salin pengumumannya, kirim ke grup WA RT. Atau unduh arsipnya buat panitia.</p>
+    <div class="umumkan-btns">
+      <button id="btn-wa" type="button" class="btn btn-accent">Salin pengumuman WA</button>
+      <button id="btn-json" type="button" class="btn btn-ghost">Unduh JSON</button>
+      <button id="btn-csv" type="button" class="btn btn-ghost">Unduh CSV</button>
+    </div>
+    <p class="copy-ok" id="copy-ok" role="status" aria-live="polite" hidden>Disalin! Tempel di grup WA, Bos.</p>
+    <details class="pengaturan" id="pengaturan">
+      <summary>Pengaturan panitia — poin podium &amp; hapus data</summary>
+      <div class="pengaturan-body">
+        <p>Poin podium (aturan panitia — tidak ada standar nasional baku, tiap panitia menetapkan sendiri):</p>
+        <div class="poin-row">
+          <label>Juara 1 <input id="p1" type="number" min="0" max="99" value="3"></label>
+          <label>Juara 2 <input id="p2" type="number" min="0" max="99" value="2"></label>
+          <label>Juara 3 <input id="p3" type="number" min="0" max="99" value="1"></label>
+          <button id="btn-poin" type="button" class="btn btn-ghost">Simpan poin</button>
+        </div>
+        <p class="danger-zone">
+          <button id="btn-hapus" type="button" class="btn btn-danger">Hapus semua hasil (contoh + asli)</button>
+          <span id="hapus-confirm" hidden>Yakin? Tekan sekali lagi untuk menghapus selamanya.</span>
+        </p>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer>
+  <p><strong>DETIK17</strong> — dibuat panitia untuk panitia. Data contoh berlabel CONTOH dan bisa dihapus sekali klik.</p>
+  <p>Suara Pak Juri: “Menang kalah biasa, yang penting catatannya bener.” • 17 Agustus 2026 — HUT RI ke-81 • RT 01–08</p>
+  <p class="foot-small">Font: Charmonman, Noto Sans Lisu (variable), Playwrite CO Guides — OFL, self-host. Ikon: SVG digambar sendiri, gaya solid blocky (inspirasi Bootstrap Icons, MIT). Tanpa tracker, tanpa iklan. <a href="#arena">Kembali ke lapangan ↑</a></p>
+</footer>
+
+<div class="easter" id="easter" role="status" aria-live="polite" hidden>
+  <span class="easter-stamp">DIRGAHAYU<br>RI KE-81</span>
+  <span class="easter-txt">Merdeka! Stempelnya sah, semangatnya juga.</span>
+</div>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
